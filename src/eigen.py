@@ -38,7 +38,15 @@ def build_2d_hamiltonian(N=20, potential='well'):
             return 4. * (x**2 + y**2)
         else:
             return 0.
-        
+
+    # Boundary Conditions
+    def boundary_value(i, j):
+        x = (i - N/2) * dx
+        y = (j - N/2) * dx
+        a, b = 1.0, 1.0
+        return a*x + b*y
+
+
     # Build the matrix: For each (i, j), set diagonal for 2D Laplacian plus V
     for i in range(N):
         for j in range(N):
@@ -46,15 +54,30 @@ def build_2d_hamiltonian(N=20, potential='well'):
             # Potential
             H[row, row] = -4. * inv_dx2 + V(i,j) # "Kinetic" ~ -4/dx^2 in 2D FD
             # Neighbors (assuming no boundary conditions or Dirichlet)
-            if i > 0: # up
+            # UP
+            if i > 0:
                 H[row, idx(i-1, j)] = inv_dx2
-            if i < N-1: # down
+            else:
+                H[row, row] -= inv_dx2 * boundary_value(i-1, j)
+
+            # DOWN
+            if i < N-1:
                 H[row, idx(i+1, j)] = inv_dx2
-            if j > 0: # left
+            else:
+                H[row, row] -= inv_dx2 * boundary_value(i+1, j)
+
+            # LEFT
+            if j > 0:
                 H[row, idx(i, j-1)] = inv_dx2
-            if j < N-1: # right
+            else:
+                H[row, row] -= inv_dx2 * boundary_value(i, j-1)
+
+            # RIGHT
+            if j < N-1:
                 H[row, idx(i, j+1)] = inv_dx2
-    return H
+            else:
+                H[row, row] -= inv_dx2 * boundary_value(i, j+1)
+                return H
     
 def solve_eigen(N=20, potential='well', n_eigs=None):
     """

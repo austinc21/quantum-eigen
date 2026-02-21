@@ -36,8 +36,13 @@ def build_2d_hamiltonian(N=20, potential='well'):
             y = (j - N/2) * dx
             # Quadratic potential V = k * (x^2 + y^2)
             return 4. * (x**2 + y**2)
+        elif potential == 'double':
+            x = (i - N/2) * dx
+            y = (j - N/2) * dx
+            return 10 * ((x**2 - 0.25)**2 + (y**2 - 0.25)**2)
         else:
             return 0.
+
 
     # Boundary Conditions
     def boundary_value(i, j):
@@ -100,8 +105,8 @@ def solve_eigen(N=20, potential='well', n_eigs=None):
     if not isinstance(N, int) or N <= 0:
         raise ValueError("N must be a positive integer.")
 
-    if potential not in ("well", "harmonic"):
-        raise ValueError("potential must be 'well' or 'harmonic'.")
+    if potential not in ("well", "harmonic", "double"):
+        raise ValueError("potential must be 'well', 'harmonic', or 'double'.")
 
     if n_eigs is not None:
         if not isinstance(n_eigs, int) or n_eigs <= 0:
@@ -139,7 +144,7 @@ if __name__ == '__main__':
                         help="Grid size (NxN)")
 
     parser.add_argument("--potential", type=str, default="well",
-                        choices=["well", "harmonic"],
+                        choices=["well", "harmonic", "double"],
                         help="Potential type")
 
     parser.add_argument("--n_eigs", type=int, default=5,

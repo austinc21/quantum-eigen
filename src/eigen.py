@@ -116,3 +116,5 @@ if __name__ == '__main__':
     vals, vecs = solve_eigen(args.N, args.potential, args.n_eigs)
 
     print(f"Lowest {args.n_eigs} eigenvalues:", vals)
+    np.savetxt(f"eigs_N{args.N}.txt", vals)
+

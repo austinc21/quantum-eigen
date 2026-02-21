@@ -88,8 +88,19 @@ def solve_eigen(N=20, potential='well', n_eigs=None):
     H = build_2d_hamiltonian(N, potential)
 
 
-    # Solve entire spectrum (careful for large N)
+    # Solve entire spectrum 
     vals, vecs = eigh(H)
+
+# Save ground-state probability density 
+
+    psi0 = vecs[:, 0]                    # lowest eigenvector
+    psi0_grid = psi0.reshape(args.N, args.N)
+
+    prob_density = np.abs(psi0_grid)**2  # |psi|^2
+
+    np.savetxt(f"psi0_N{args.N}.txt", prob_density)
+
+
     # Sort
     idx_sorted = np.argsort(vals)
     vals_sorted = vals[idx_sorted]
